@@ -15,6 +15,7 @@ import {
 import { getConnectedAccount, connectWallet } from "../utils/aptos";
 import { usePayments } from "../hooks/usePayments";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import QRService from "../services/qrService";
 
 interface VATRefundPageProps {
   onBack?: () => void;
@@ -30,6 +31,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [qrValue, setQrValue] = useState<string>("");
+  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string>("");
   const [refundAmount, setRefundAmount] = useState<number>(0);
   const [entryMode, setEntryMode] = useState<"upload" | "manual">("upload");
   const [selectedToken, setSelectedToken] = useState<"APT" | "USDC">("APT");
@@ -120,8 +123,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       setSelectedFile(file);
       setErrorMessage(null);
 
-      // Simulate VAT calculation based on file - range between 1-10 APT
-      setRefundAmount(Math.floor(Math.random() * 9) + 1);
+      // Simulate VAT calculation based on file - limited to 0.01 maximum
+      setRefundAmount(0.01);
 
       console.log(
         "File selected:",
@@ -168,14 +171,10 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       // Simulate document processing with more realistic behavior
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Calculate refund amount based on file processing simulation
-      const estimatedRefund = Math.floor(Math.random() * 50) + 10; // Random amount between 10-60
-      setRefundAmount(estimatedRefund);
+      // Calculate refund amount based on file processing simulation - limited to 0.01 maximum
+      setRefundAmount(0.01);
 
-      console.log(
-        "Document processed successfully, estimated refund:",
-        estimatedRefund
-      );
+      console.log("Document processed successfully, estimated refund:", 0.01);
       setStep("review");
     } catch (error) {
       console.error("Upload processing error:", error);
@@ -190,6 +189,26 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     setErrorMessage(null);
 
     try {
+      // Generate QR code first before attempting transaction
+      const vatRegNo = entryMode === "manual" ? formData.vatRegNo : "VAT123456";
+      const receiptNo =
+        entryMode === "manual"
+          ? formData.receiptNo
+          : selectedFile?.name.split(".")[0] || `RCP${Date.now()}`;
+      const vatAmount = refundAmount * 0.2; // Assume 20% VAT rate
+
+      const qrData = await QRService.generateVATRefundQR(
+        vatRegNo,
+        receiptNo,
+        refundAmount,
+        vatAmount
+      );
+
+      setQrValue(qrData.uri);
+      setQrCodeDataURL(qrData.qrCodeDataURL);
+      setSessionId(qrData.sessionId);
+      setStep("sign");
+
       // Check if wallet is connected via the adapter
       if (!account?.address) {
         throw new Error("Wallet not connected. Please connect your wallet.");
@@ -273,7 +292,8 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       }
 
       setTransactionHash(tx || "");
-      setQrValue(`evm://tx/${tx}`);
+      // Keep the existing QR code (which contains the transaction details)
+      // Don't overwrite with a fake URL
       setTransactionStatus("confirmed");
     } catch (error) {
       console.error("Error in handleApprove:", error);
@@ -405,9 +425,12 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     setSelectedFile(null);
     setErrorMessage(null);
     setQrValue("");
+    setQrCodeDataURL("");
+    setSessionId("");
     setTransactionStatus("waiting");
     setTransactionHash("");
     setRefundAmount(0);
+    QRService.clearSession();
     // Refresh history data
     setRefreshKey((prev) => prev + 1);
     setFormData({
@@ -1156,13 +1179,20 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                   </p>
 
                   <div className="bg-white border-2 border-gray-300 rounded-lg p-6 w-[200px] h-[200px] flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <QrCode className="w-16 h-16 mx-auto mb-3 text-gray-700" />
-                      <div className="text-sm text-gray-600">Scan QR Code</div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        ID: {qrValue.slice(-8)}
+                    {qrCodeDataURL ? (
+                      <img
+                        src={qrCodeDataURL}
+                        alt="VAT Refund QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <QrCode className="w-16 h-16 mx-auto mb-3 text-gray-700" />
+                        <div className="text-sm text-gray-600">
+                          Generating QR Code...
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="w-full max-w-md bg-blue-50 border border-blue-100 rounded-lg p-4 mt-2">

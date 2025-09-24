@@ -22,15 +22,23 @@ export const useChat = () => {
   // Check wallet connection on hook initialization
   useEffect(() => {
     const checkWalletConnection = () => {
+      console.log("🔍 Checking wallet connection...");
       if (isWalletConnected()) {
         const account = getConnectedAccount();
+        console.log("✅ Wallet connected:", account);
         setWalletAddress(account);
       } else {
+        console.log("❌ Wallet not connected");
         setWalletAddress(null);
       }
     };
 
     checkWalletConnection();
+
+    // Set up interval to check wallet connection every 2 seconds
+    const interval = setInterval(checkWalletConnection, 2000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchChatSessions = useCallback(async () => {
@@ -98,9 +106,26 @@ export const useChat = () => {
       title: string,
       initialMessageContent?: string
     ): Promise<ChatSession | null> => {
+      console.log("🚀 Creating chat session...", { walletAddress, title });
+
       if (!walletAddress) {
-        setError("Wallet not connected");
-        return null;
+        setError("Wallet not connected - using offline mode");
+        console.warn("Creating session without wallet connection");
+
+        // Create a temporary session for offline use
+        const now = new Date().toISOString();
+        const tempSession: ChatSession = {
+          id: generateUUID(),
+          user_id: "offline-user",
+          title: title,
+          last_message_content: initialMessageContent || null,
+          last_message_timestamp: initialMessageContent ? now : null,
+          created_at: now,
+          updated_at: now,
+        };
+
+        console.log("Created temporary offline session:", tempSession);
+        return tempSession;
       }
 
       setError(null);
@@ -124,7 +149,7 @@ export const useChat = () => {
         const localStorageKey = `Orbix_chat_sessions_${walletAddress}`;
         localStorage.setItem(localStorageKey, JSON.stringify(updatedSessions));
 
-        console.log("Created chat session in localStorage:", newSession);
+        console.log("✅ Created chat session in localStorage:", newSession);
 
         // Try to also save to Supabase for backward compatibility
         try {
@@ -135,8 +160,9 @@ export const useChat = () => {
             last_message_content: initialMessageContent || null,
             last_message_timestamp: initialMessageContent ? now : null,
           });
+          console.log("✅ Saved to Supabase successfully");
         } catch (supabaseError) {
-          console.error(
+          console.warn(
             "Failed to save chat session to Supabase (continuing anyway):",
             supabaseError
           );
@@ -147,7 +173,7 @@ export const useChat = () => {
         setError(
           err instanceof Error ? err.message : "Failed to create chat session"
         );
-        console.error("Error creating chat session:", err);
+        console.error("❌ Error creating chat session:", err);
         return null;
       }
     },
@@ -271,20 +297,39 @@ export const useChat = () => {
 
   const getChatMessages = useCallback(
     async (sessionId: string): Promise<ChatMessage[]> => {
+      console.log("🔍 Loading messages for session:", sessionId);
+
       if (!walletAddress) {
-        setError("Wallet not connected");
+        console.warn("⚠️ No wallet address, trying offline mode");
+        // Try to get messages from localStorage even without wallet for offline mode
+        const localStorageKey = `Orbix_chat_messages_offline_${sessionId}`;
+        const storedMessages = localStorage.getItem(localStorageKey);
+
+        if (storedMessages) {
+          try {
+            const parsedMessages = JSON.parse(storedMessages);
+            console.log("✅ Loaded offline messages:", parsedMessages.length);
+            return parsedMessages;
+          } catch (parseError) {
+            console.error("Error parsing offline messages:", parseError);
+          }
+        }
         return [];
       }
 
       setError(null);
 
-      // First try to get chat messages from localStorage
+      // First try to get chat messages from localStorage (faster)
       const localStorageKey = `Orbix_chat_messages_${walletAddress}_${sessionId}`;
       const storedMessages = localStorage.getItem(localStorageKey);
 
       if (storedMessages) {
         try {
           const parsedMessages = JSON.parse(storedMessages);
+          console.log(
+            "✅ Loaded messages from localStorage:",
+            parsedMessages.length
+          );
           return parsedMessages;
         } catch (parseError) {
           console.error(
@@ -294,8 +339,9 @@ export const useChat = () => {
         }
       }
 
-      // If no messages in localStorage, try to get from Supabase for backward compatibility
+      // If no messages in localStorage, try to get from Supabase
       try {
+        console.log("🔄 Fetching messages from Supabase...");
         const { data, error } = await supabase
           .from("chat_messages")
           .select("*")
@@ -306,11 +352,13 @@ export const useChat = () => {
         if (error) throw error;
 
         if (data && data.length > 0) {
+          console.log("✅ Loaded messages from Supabase:", data.length);
           // Save to localStorage for future use
           localStorage.setItem(localStorageKey, JSON.stringify(data));
           return data;
         }
 
+        console.log("📝 No existing messages found for session");
         return [];
       } catch (err) {
         setError(
@@ -329,23 +377,48 @@ export const useChat = () => {
       type: "user" | "assistant",
       content: string
     ): Promise<ChatMessage | null> => {
+      console.log("💾 Saving message:", {
+        sessionId,
+        type,
+        content: content.substring(0, 50) + "...",
+      });
+
+      const now = new Date().toISOString();
+      const newMessage: ChatMessage = {
+        id: generateUUID(),
+        session_id: sessionId,
+        user_id: walletAddress || "offline-user",
+        type: type,
+        content: content,
+        created_at: now,
+      };
+
       if (!walletAddress) {
-        setError("Wallet not connected");
-        return null;
+        console.warn("⚠️ No wallet address, saving in offline mode");
+        // Save in offline mode
+        const localStorageKey = `Orbix_chat_messages_offline_${sessionId}`;
+        const storedMessages = localStorage.getItem(localStorageKey);
+        let existingMessages: ChatMessage[] = [];
+
+        if (storedMessages) {
+          try {
+            existingMessages = JSON.parse(storedMessages);
+          } catch (parseError) {
+            console.error(
+              "Error parsing existing offline messages:",
+              parseError
+            );
+          }
+        }
+
+        const updatedMessages = [...existingMessages, newMessage];
+        localStorage.setItem(localStorageKey, JSON.stringify(updatedMessages));
+        console.log("✅ Message saved offline to localStorage");
+        return newMessage;
       }
 
       setError(null);
       try {
-        const now = new Date().toISOString();
-        const newMessage: ChatMessage = {
-          id: generateUUID(),
-          session_id: sessionId,
-          user_id: walletAddress,
-          type: type,
-          content: content,
-          created_at: now,
-        };
-
         // Get existing messages for this session
         const localStorageKey = `Orbix_chat_messages_${walletAddress}_${sessionId}`;
         const storedMessages = localStorage.getItem(localStorageKey);
@@ -362,21 +435,24 @@ export const useChat = () => {
         // Add new message
         const updatedMessages = [...existingMessages, newMessage];
 
-        // Save to localStorage
+        // Save to localStorage first (faster)
         localStorage.setItem(localStorageKey, JSON.stringify(updatedMessages));
-
-        console.log("Added chat message to localStorage:", newMessage);
+        console.log("✅ Message saved to localStorage");
 
         // Update the last message in the session
-        await updateChatSession(sessionId, {
-          last_message_content: content,
-          last_message_timestamp: now,
-          updated_at: now,
-        });
-
-        // Try to also save to Supabase for backward compatibility
         try {
-          await supabase.from("chat_messages").insert({
+          await updateChatSession(sessionId, {
+            last_message_content: content,
+            last_message_timestamp: now,
+            updated_at: now,
+          });
+        } catch (updateError) {
+          console.error("Failed to update session:", updateError);
+        }
+
+        // Try to also save to Supabase (background operation)
+        try {
+          const { error } = await supabase.from("chat_messages").insert({
             id: newMessage.id,
             session_id: sessionId,
             user_id: walletAddress,
@@ -384,9 +460,12 @@ export const useChat = () => {
             content: content,
             created_at: now,
           });
+
+          if (error) throw error;
+          console.log("✅ Message saved to Supabase");
         } catch (supabaseError) {
-          console.error(
-            "Failed to save chat message to Supabase (continuing anyway):",
+          console.warn(
+            "Failed to save message to Supabase (localStorage backup available):",
             supabaseError
           );
         }

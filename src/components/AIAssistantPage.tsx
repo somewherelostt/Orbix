@@ -145,26 +145,25 @@ export const AIAssistantPage: React.FC<AIAssistantPageProps> = ({
           setCurrentSessionId(newSession.id);
           onSessionCreated?.(newSession.id); // Notify parent about new session
         } else {
-          throw new Error("Failed to create new chat session");
+          // Even if session creation fails, we can still process the AI response
+          console.warn(
+            "Session creation failed, but continuing with AI response"
+          );
         }
       } catch (error) {
         console.error("Error creating chat session:", error);
-        const errorMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: "assistant",
-          content:
-            "I apologize, but I encountered an error starting a new conversation. Please try again.",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-        setIsLoading(false);
-        return;
+        // Don't return here - continue with AI processing
       }
     }
 
-    // Save user message to DB
+    // Save user message to DB if session exists
     if (sessionToUse) {
-      await addChatMessage(sessionToUse, "user", userMessageContent);
+      try {
+        await addChatMessage(sessionToUse, "user", userMessageContent);
+      } catch (error) {
+        console.error("Error saving user message:", error);
+        // Continue anyway
+      }
     }
 
     try {
@@ -191,9 +190,14 @@ export const AIAssistantPage: React.FC<AIAssistantPageProps> = ({
 
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // Save assistant message to DB
+      // Save assistant message to DB if session exists
       if (sessionToUse) {
-        await addChatMessage(sessionToUse, "assistant", response);
+        try {
+          await addChatMessage(sessionToUse, "assistant", response);
+        } catch (error) {
+          console.error("Error saving assistant message:", error);
+          // Continue anyway - user still sees the message
+        }
       }
     } catch (error) {
       console.error("Error processing message:", error);

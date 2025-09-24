@@ -68,7 +68,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
     (sum, emp) => sum + (emp.amount || 0),
     0
   );
-  const networkFees = employeesToPay.length * 0.001; // 0.001 ALGO per transaction
+  const networkFees = employeesToPay.length * 0.001; // 0.001 apt per transaction
   const estimatedTime = employeesToPay.length * 2; // 2 seconds per transaction
 
   const walletConnected = isWalletConnected();
@@ -203,7 +203,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
               )}`
             : "the recipient";
 
-          errorMessage = `Recipient ${shortAddress} has not opted-in to receive USDC (Asset ID: 10458941). They must opt-in before receiving USDC payments. Ask them to opt-in first, or switch to ALGO payments.`;
+          errorMessage = `Recipient ${shortAddress} has not opted-in to receive USDC (Asset ID: 10458941). They must opt-in before receiving USDC payments. Ask them to opt-in first, or switch to Aptos payments.`;
         } else if (error.message.includes("Wallet not connected")) {
           errorMessage =
             "Wallet is not connected. Please connect your wallet and try again.";
@@ -224,7 +224,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
   const viewOnExplorer = () => {
     if (paymentResult?.txHash) {
       window.open(
-        `https://testnet.algoexplorer.io/tx/${paymentResult.txHash}`,
+        `https://explorer.aptoslabs.com/txn/${paymentResult.txHash}?network=testnet`,
         "_blank"
       );
     }
@@ -431,7 +431,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Network Fees:</span>
                   <span className="font-medium text-gray-900">
-                    {networkFees.toFixed(3)} ALGO
+                    {networkFees.toFixed(3)} APT
                   </span>
                 </div>
 
@@ -453,7 +453,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
                         ${totalAmount.toLocaleString()}
                       </div>
                       <div className="text-sm text-gray-600">
-                        + {networkFees.toFixed(3)} ALGO fees
+                        + {networkFees.toFixed(3)} APT fees
                       </div>
                     </div>
                   </div>
@@ -510,7 +510,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
                         onClick={viewOnExplorer}
                         className="text-sm text-gray-700 hover:text-gray-900 flex items-center space-x-1"
                       >
-                        <span>View on Pera Explorer</span>
+                        <span>View on Aptos Explorer</span>
                         <Send className="w-3 h-3" />
                       </button>
                     </>

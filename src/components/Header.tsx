@@ -71,6 +71,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleSignOut = async () => {
     try {
+      // Disconnect wallet first
+      if (isWalletConnected) {
+        await disconnect();
+      }
+      // Then sign out from Supabase
       await signOut();
       setActiveTab("landing");
       setShowUserMenu(false);

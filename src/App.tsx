@@ -8,12 +8,12 @@ import { Header } from "./components/Header";
 function App() {
   const { account, connected } = useWallet();
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem("algopay_active_tab") || "landing";
+    return localStorage.getItem("aptos_pay_active_tab") || "landing";
   });
 
   // persist active tab
   useEffect(() => {
-    localStorage.setItem("algopay_active_tab", activeTab);
+    localStorage.setItem("aptos_pay_active_tab", activeTab);
   }, [activeTab]);
 
   // handle redirects

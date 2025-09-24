@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { formatAddress } from "../utils/aptos";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import ConnectButton from "../utils/connect-wallet";
@@ -40,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
 }) => {
   const { signOut } = useAuth();
+  const { disconnect, connect } = useWallet();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -126,6 +128,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSignOut = async () => {
     try {
+      // Disconnect wallet first
+      if (isWalletConnected) {
+        await disconnect();
+      }
+      // Then sign out from Supabase
       await signOut();
       setActiveTab("landing");
       setShowUserMenu(false);
@@ -134,11 +141,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const handleWalletAction = () => {
+  const handleWalletAction = async () => {
     if (isWalletConnected) {
       setShowWalletMenu(!showWalletMenu);
     } else {
-      onConnectWallet();
+      try {
+        await connect("Petra" as any);
+      } catch (error) {
+        console.error("Failed to connect wallet:", error);
+      }
     }
   };
 

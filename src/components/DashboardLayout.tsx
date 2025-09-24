@@ -31,7 +31,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
   const { account, connected } = useWallet();
   // Get activeTab from localStorage to maintain persistence
   const [activeTab, setActiveTab] = useState(() => {
-    const savedTab = localStorage.getItem("algopay_active_tab");
+    const savedTab = localStorage.getItem("aptos_pay_active_tab");
     return savedTab &&
       [
         "dashboard",
@@ -75,7 +75,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ companyName }) => {
 
   // Update localStorage when activeTab changes
   useEffect(() => {
-    localStorage.setItem("algopay_active_tab", activeTab);
+    localStorage.setItem("aptos_pay_active_tab", activeTab);
   }, [activeTab]);
 
   // Check for existing wallet connection on app load

@@ -11,7 +11,6 @@ const config = new AptosConfig({ network: Network.TESTNET });
 const aptos = new Aptos(config);
 
 // Contract addresses - Update these after deployment
-const PAYMENT_PROCESSOR_ADDRESS = "0x1"; // Replace with actual deployed address
 const VAT_REFUND_ADDRESS = "0x1"; // Replace with actual deployed address
 
 // State management for wallet connection
@@ -175,15 +174,18 @@ export const getAccountBalance = async (): Promise<{
   }
 };
 
-// Send payment using smart contract (updated implementation)
+// Send payment using smart contract (real implementation)
 export const sendPayment = async (
   recipient: string,
   amount: number,
-  token: string = "APT"
+  _token: string = "APT", // Underscore prefix to indicate unused parameter
+  walletSignAndSubmitTransaction?: any
 ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
   try {
-    if (!connectedAccount) {
-      throw new Error("Wallet not connected");
+    if (!walletSignAndSubmitTransaction) {
+      throw new Error(
+        "Wallet transaction function not provided. Make sure Petra wallet is connected."
+      );
     }
 
     if (!isValidAptosAddress(recipient)) {
@@ -197,48 +199,34 @@ export const sendPayment = async (
     // Convert amount to proper units (APT uses 8 decimals)
     const amountInOctas = Math.floor(amount * 100000000);
 
-    try {
-      // Try to use smart contract for payment tracking
-      const payload = {
-        type: "entry_function_payload",
-        function: `${PAYMENT_PROCESSOR_ADDRESS}::payment_processor::process_payment`,
-        type_arguments: ["0x1::aptos_coin::AptosCoin"],
-        arguments: [
-          recipient,
-          amountInOctas.toString(),
-          token,
-          "direct_payment",
-          "manual_payment",
-        ],
-      };
+    // Create direct APT transfer transaction payload
+    const payload = {
+      type: "entry_function_payload" as const,
+      function: "0x1::coin::transfer",
+      type_arguments: ["0x1::aptos_coin::AptosCoin"],
+      arguments: [recipient, amountInOctas.toString()],
+    };
 
-      // For now, simulate the transaction since we need proper wallet integration
-      console.log("Would submit transaction:", payload);
+    console.log("Submitting real APT transfer transaction:", payload);
 
-      // Mock transaction hash until proper wallet integration
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
+    // Submit transaction using connected wallet
+    const response = await walletSignAndSubmitTransaction(payload);
+    console.log("Transaction submitted:", response);
 
-      // Simulate transaction delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Wait for transaction confirmation
+    if (response.hash) {
+      const txnDetails = await aptos.waitForTransaction({
+        transactionHash: response.hash,
+      });
+
+      console.log("Transaction confirmed:", txnDetails);
 
       return {
         success: true,
-        txHash: mockTxHash,
+        txHash: response.hash,
       };
-    } catch (contractError) {
-      console.warn(
-        "Contract call failed, falling back to direct transfer:",
-        contractError
-      );
-
-      // Fallback to direct transfer
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      return {
-        success: true,
-        txHash: mockTxHash,
-      };
+    } else {
+      throw new Error("No transaction hash returned");
     }
   } catch (error) {
     console.error("Payment failed:", error);
@@ -249,14 +237,17 @@ export const sendPayment = async (
   }
 };
 
-// Send bulk payment using smart contract (updated implementation)
+// Send bulk payment using smart contract (real implementation)
 export const sendBulkPayment = async (
   recipients: Array<{ address: string; amount: number }>,
-  token: "APT" | "USDC" = "APT"
+  token: "APT" | "USDC" = "APT",
+  walletSignAndSubmitTransaction?: any
 ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
   try {
-    if (!connectedAccount) {
-      throw new Error("Wallet not connected");
+    if (!walletSignAndSubmitTransaction) {
+      throw new Error(
+        "Wallet transaction function not provided. Make sure Petra wallet is connected."
+      );
     }
 
     if (!recipients || recipients.length === 0) {
@@ -274,51 +265,51 @@ export const sendBulkPayment = async (
       }
     }
 
-    // Prepare data for smart contract
-    const addresses = recipients.map((r) => r.address);
-    const amounts = recipients.map((r) => Math.floor(r.amount * 100000000)); // Convert to octas
+    console.log(
+      `Sending bulk payment to ${recipients.length} recipients using ${token}`
+    );
+    console.log("Recipients:", recipients);
 
-    try {
-      // Try to use smart contract for bulk payment
+    // For bulk payments, we'll need to submit individual transactions
+    // In a real implementation, you might want to use a batch transaction or smart contract
+    let lastTxHash: string = "";
+
+    for (const recipient of recipients) {
+      const amountInOctas = Math.floor(recipient.amount * 100000000);
+
       const payload = {
-        type: "entry_function_payload",
-        function: `${PAYMENT_PROCESSOR_ADDRESS}::payment_processor::process_bulk_payment`,
+        type: "entry_function_payload" as const,
+        function: "0x1::coin::transfer",
         type_arguments: ["0x1::aptos_coin::AptosCoin"],
-        arguments: [addresses, amounts.map((a) => a.toString()), token],
+        arguments: [recipient.address, amountInOctas.toString()],
       };
 
-      console.log("Would submit bulk payment transaction:", payload);
+      console.log(`Submitting payment to ${recipient.address}:`, payload);
 
-      // Mock transaction hash until proper wallet integration
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
+      const response = await walletSignAndSubmitTransaction(payload);
 
-      console.log(
-        `Sending bulk payment to ${recipients.length} recipients using ${token}`
-      );
-      console.log("Recipients:", recipients);
+      if (response.hash) {
+        await aptos.waitForTransaction({
+          transactionHash: response.hash,
+        });
+        lastTxHash = response.hash;
+        console.log(
+          `Payment to ${recipient.address} confirmed: ${response.hash}`
+        );
+      } else {
+        throw new Error(
+          `Failed to get transaction hash for payment to ${recipient.address}`
+        );
+      }
 
-      // Simulate transaction delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      return {
-        success: true,
-        txHash: mockTxHash,
-      };
-    } catch (contractError) {
-      console.warn(
-        "Bulk contract call failed, falling back to individual transfers:",
-        contractError
-      );
-
-      // Fallback to mock individual transfers
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      return {
-        success: true,
-        txHash: mockTxHash,
-      };
+      // Small delay between transactions to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+
+    return {
+      success: true,
+      txHash: lastTxHash, // Return the last transaction hash
+    };
   } catch (error) {
     console.error("Bulk payment failed:", error);
     return {
@@ -413,18 +404,21 @@ export const getTransactionDetails = async (txHash: string): Promise<any> => {
 
 // VAT Refund specific functions
 
-// Submit VAT refund claim using smart contract
+// Submit VAT refund claim using smart contract (real implementation)
 export const submitVATRefund = async (
   vatRegNo: string,
   receiptNo: string,
   billAmount: number,
   vatAmount: number,
   currency: string = "APT",
-  documentHash: string = ""
+  documentHash: string = "",
+  walletSignAndSubmitTransaction?: any
 ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
   try {
-    if (!connectedAccount) {
-      throw new Error("Wallet not connected");
+    if (!walletSignAndSubmitTransaction) {
+      throw new Error(
+        "Wallet transaction function not provided. Make sure Petra wallet is connected."
+      );
     }
 
     if (billAmount <= 0 || vatAmount <= 0) {
@@ -442,7 +436,7 @@ export const submitVATRefund = async (
     try {
       // Use smart contract for VAT refund submission
       const payload = {
-        type: "entry_function_payload",
+        type: "entry_function_payload" as const,
         function: `${VAT_REFUND_ADDRESS}::vat_refund::submit_vat_refund`,
         type_arguments: [],
         arguments: [
@@ -455,24 +449,35 @@ export const submitVATRefund = async (
         ],
       };
 
-      console.log("Would submit VAT refund transaction:", payload);
+      console.log("Submitting real VAT refund transaction:", payload);
 
-      // Mock transaction hash until proper wallet integration
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
+      const response = await walletSignAndSubmitTransaction(payload);
+      console.log("VAT refund transaction submitted:", response);
 
-      // Simulate transaction delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (response.hash) {
+        const txnDetails = await aptos.waitForTransaction({
+          transactionHash: response.hash,
+        });
 
-      return {
-        success: true,
-        txHash: mockTxHash,
-      };
+        console.log("VAT refund transaction confirmed:", txnDetails);
+
+        return {
+          success: true,
+          txHash: response.hash,
+        };
+      } else {
+        throw new Error("No transaction hash returned");
+      }
     } catch (contractError) {
-      console.warn("VAT refund contract call failed:", contractError);
-      return {
-        success: false,
-        error: "Failed to submit VAT refund claim",
-      };
+      console.error("VAT refund contract call failed:", contractError);
+
+      // If the contract isn't deployed, we can still do a direct payment as a fallback
+      // This would be a direct APT transfer to represent the VAT refund
+      console.log("Falling back to direct APT transfer for VAT refund");
+
+      throw new Error(
+        "VAT refund smart contract not available. Please ensure the contract is deployed."
+      );
     }
   } catch (error) {
     console.error("VAT refund submission failed:", error);

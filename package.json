@@ -23,7 +23,6 @@
     "framer-motion": "^11.0.24",
     "lucide-react": "^0.344.0",
     "petra-plugin-wallet-adapter": "^0.4.5",
-    "qrcode": "^1.5.4",
     "qrcode-generator": "^2.0.4",
     "qrcode.js": "^0.0.1",
     "react": "^18.3.1",

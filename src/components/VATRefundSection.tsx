@@ -2,24 +2,21 @@ import React, { useState } from "react";
 import {
   Upload,
   FileCheck,
-  QrCode,
   CheckCircle,
   AlertCircle,
-  HelpCircle,
+  Wallet,
 } from "lucide-react";
 import {
   connectWallet as aptosConnectWallet,
   getConnectedAccount,
 } from "../utils/aptos";
-import QRService from "../services/qrService";
-import { PetraWalletGuide } from "./PetraWalletGuide";
 
 interface VATRefundSectionProps {
   refreshKey?: number;
 }
 
 export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
-  refreshKey = 0, // underscore to indicate usage in effect dependency
+  refreshKey: _refreshKey = 0, // underscore to indicate unused
 }) => {
   const [step, setStep] = useState<
     "upload" | "review" | "sign" | "confirmation" | "error"
@@ -27,11 +24,7 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [qrValue, setQrValue] = useState<string>("");
-  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>("");
-  const [sessionId, setSessionId] = useState<string>("");
   const [refundAmount, setRefundAmount] = useState<number>(0);
-  const [showGuide, setShowGuide] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -64,25 +57,11 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
   const handleApprove = async () => {
     setIsLoading(true);
     try {
-      // Generate real QR code for VAT refund transaction
-      const vatRegNo = "VAT123456"; // This would come from user input or form
-      const receiptNo = selectedFile?.name.split(".")[0] || `RCP${Date.now()}`;
-      const vatAmount = refundAmount * 0.2; // Assume 20% VAT rate
-
-      const qrData = await QRService.generateVATRefundQR(
-        vatRegNo,
-        receiptNo,
-        refundAmount,
-        vatAmount
-      );
-
-      setQrValue(qrData.uri);
-      setQrCodeDataURL(qrData.qrCodeDataURL);
-      setSessionId(qrData.sessionId);
+      // Skip QR code generation, go directly to sign step
       setStep("sign");
     } catch (error) {
-      setErrorMessage("Failed to generate QR code. Please try again.");
-      console.error("QR generation error:", error);
+      setErrorMessage("Failed to proceed with transaction. Please try again.");
+      console.error("Transaction error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -91,37 +70,14 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
   const handleSign = async () => {
     setIsLoading(true);
     try {
-      // Check if we have a valid session
-      if (!sessionId || !QRService.isSessionValid()) {
-        throw new Error(
-          "QR code session has expired. Please generate a new one."
-        );
+      // Connect wallet directly if not connected
+      if (!getConnectedAccount()) {
+        await aptosConnectWallet();
       }
 
-      // In a real implementation, you would wait for the wallet response
-      // For now, we'll simulate the process
-      try {
-        // Wait for wallet response (this would be handled by WalletConnect in production)
-        const response = await QRService.waitForWalletResponse(
-          sessionId,
-          30000
-        ); // 30 second timeout
-
-        if (response.result.success) {
-          setStep("confirmation");
-        } else {
-          throw new Error("Transaction was rejected by the wallet");
-        }
-      } catch (timeoutError) {
-        // Fallback to direct wallet connection if QR scanning times out
-        if (!getConnectedAccount()) {
-          await aptosConnectWallet();
-        }
-
-        // Simulate transaction signing with connected wallet
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setStep("confirmation");
-      }
+      // Simulate transaction signing with connected wallet
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setStep("confirmation");
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -138,10 +94,6 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
     setStep("upload");
     setSelectedFile(null);
     setErrorMessage(null);
-    setQrValue("");
-    setQrCodeDataURL("");
-    setSessionId("");
-    QRService.clearSession();
   };
 
   const renderStep = () => {
@@ -240,63 +192,21 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
         return (
           <div className="space-y-4">
             <div className="bg-gray-100 border border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center">
-              <div className="flex items-center justify-between w-full mb-2">
-                <QrCode className="w-8 h-8 text-blue-500" />
-                <button
-                  onClick={() => setShowGuide(true)}
-                  className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
-                >
-                  <HelpCircle className="w-4 h-4 mr-1" />
-                  Help
-                </button>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                <Wallet className="w-6 h-6 text-blue-500" />
               </div>
               <p className="text-sm text-gray-700 mb-3 text-center">
-                Scan with Petra Wallet Mobile App
+                Connect your wallet to sign the transaction
               </p>
-              <div className="bg-white p-2 rounded-lg flex items-center justify-center">
-                <div className="border-2 border-gray-300 rounded-lg p-4 w-[200px] h-[200px] flex items-center justify-center">
-                  {qrCodeDataURL ? (
-                    <img
-                      src={qrCodeDataURL}
-                      alt="WalletConnect QR Code"
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <QrCode className="w-12 h-12 mx-auto mb-2 text-gray-700" />
-                      <div className="text-xs text-gray-600">
-                        Generating QR Code...
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="text-center mt-3 space-y-2">
+              <div className="text-center space-y-2">
                 <p className="text-xs text-gray-600 font-medium">
-                  Quick Instructions:
+                  Instructions:
                 </p>
                 <ol className="text-xs text-gray-500 text-left space-y-1">
-                  <li>1. Open Petra Wallet mobile app</li>
-                  <li>2. Look for WalletConnect or scan option</li>
-                  <li>3. Scan the QR code above</li>
-                  <li>4. Approve connection & sign transaction</li>
+                  <li>1. Click the button below to connect your wallet</li>
+                  <li>2. Approve the connection in your wallet</li>
+                  <li>3. Sign the transaction when prompted</li>
                 </ol>
-                {sessionId && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    Session: {sessionId.slice(-8)}
-                  </p>
-                )}
-                {/* Debug info - remove in production */}
-                {qrValue && (
-                  <details className="mt-2">
-                    <summary className="text-xs text-blue-500 cursor-pointer">
-                      Debug: Show URI (tap to expand)
-                    </summary>
-                    <div className="text-xs text-gray-600 mt-1 p-2 bg-gray-50 rounded border break-all">
-                      {qrValue}
-                    </div>
-                  </details>
-                )}
               </div>
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -329,7 +239,7 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              {isLoading ? "Waiting for Wallet..." : "I've Connected & Signed"}
+              {isLoading ? "Connecting Wallet..." : "Connect Wallet & Sign"}
             </button>
             <button
               onClick={handleReset}
@@ -337,11 +247,6 @@ export const VATRefundSection: React.FC<VATRefundSectionProps> = ({
             >
               Cancel
             </button>
-
-            {/* Help Guide Modal */}
-            {showGuide && (
-              <PetraWalletGuide onClose={() => setShowGuide(false)} />
-            )}
           </div>
         );
 

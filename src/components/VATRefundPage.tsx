@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Upload,
   FileCheck,
-  QrCode,
   CheckCircle,
   AlertCircle,
   Search,
@@ -11,11 +10,11 @@ import {
   FileUp,
   FormInput,
   ExternalLink,
+  Wallet,
 } from "lucide-react";
 import { getConnectedAccount, connectWallet } from "../utils/aptos";
 import { usePayments } from "../hooks/usePayments";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import QRService from "../services/qrService";
 
 interface VATRefundPageProps {
   onBack?: () => void;
@@ -30,9 +29,6 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [qrValue, setQrValue] = useState<string>("");
-  const [qrCodeDataURL, setQrCodeDataURL] = useState<string>("");
-  const [sessionId, setSessionId] = useState<string>("");
   const [refundAmount, setRefundAmount] = useState<number>(0);
   const [entryMode, setEntryMode] = useState<"upload" | "manual">("upload");
   const [selectedToken, setSelectedToken] = useState<"APT" | "USDC">("APT");
@@ -189,24 +185,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     setErrorMessage(null);
 
     try {
-      // Generate QR code first before attempting transaction
-      const vatRegNo = entryMode === "manual" ? formData.vatRegNo : "VAT123456";
-      const receiptNo =
-        entryMode === "manual"
-          ? formData.receiptNo
-          : selectedFile?.name.split(".")[0] || `RCP${Date.now()}`;
-      const vatAmount = refundAmount * 0.2; // Assume 20% VAT rate
-
-      const qrData = await QRService.generateVATRefundQR(
-        vatRegNo,
-        receiptNo,
-        refundAmount,
-        vatAmount
-      );
-
-      setQrValue(qrData.uri);
-      setQrCodeDataURL(qrData.qrCodeDataURL);
-      setSessionId(qrData.sessionId);
+      // Skip QR generation and proceed directly with transaction
       setStep("sign");
 
       // Check if wallet is connected via the adapter
@@ -389,7 +368,6 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
 
         // Set transaction as confirmed
         setTransactionStatus("confirmed");
-        setQrValue(`aptos://tx/${result.txHash}`);
       } else {
         // Handle payment failure
         setErrorMessage(result.error || "Payment failed");
@@ -424,13 +402,9 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
     setStep("upload");
     setSelectedFile(null);
     setErrorMessage(null);
-    setQrValue("");
-    setQrCodeDataURL("");
-    setSessionId("");
     setTransactionStatus("waiting");
     setTransactionHash("");
     setRefundAmount(0);
-    QRService.clearSession();
     // Refresh history data
     setRefreshKey((prev) => prev + 1);
     setFormData({
@@ -1166,7 +1140,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center mb-6">
               {transactionStatus === "waiting" ? (
                 <>
-                  <QrCode className="w-16 h-16 text-blue-500 mb-4" />
+                  <Wallet className="w-16 h-16 text-blue-500 mb-4" />
                   <h3 className="font-semibold text-gray-900 mb-2">
                     Check Your Petra Wallet
                   </h3>
@@ -1179,20 +1153,12 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                   </p>
 
                   <div className="bg-white border-2 border-gray-300 rounded-lg p-6 w-[200px] h-[200px] flex items-center justify-center mb-4">
-                    {qrCodeDataURL ? (
-                      <img
-                        src={qrCodeDataURL}
-                        alt="VAT Refund QR Code"
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <div className="text-center">
-                        <QrCode className="w-16 h-16 mx-auto mb-3 text-gray-700" />
-                        <div className="text-sm text-gray-600">
-                          Generating QR Code...
-                        </div>
+                    <div className="text-center">
+                      <Wallet className="w-16 h-16 mx-auto mb-3 text-gray-700" />
+                      <div className="text-sm text-gray-600">
+                        Waiting for wallet...
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   <div className="w-full max-w-md bg-blue-50 border border-blue-100 rounded-lg p-4 mt-2">
@@ -1246,17 +1212,14 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                           </span>
                           <a
                             href={`https://explorer.aptoslabs.com/txn/${
-                              transactionHash || qrValue.slice(-16)
+                              transactionHash || "unknown"
                             }?network=testnet`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-green-900 font-mono flex items-center hover:text-blue-600 hover:underline"
                           >
                             <span className="truncate max-w-32">
-                              {(transactionHash || qrValue.slice(-16)).slice(
-                                0,
-                                16
-                              )}
+                              {(transactionHash || "unknown").slice(0, 16)}
                               ...
                             </span>
                             <ExternalLink className="w-3 h-3 ml-1" />

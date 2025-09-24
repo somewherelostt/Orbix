@@ -69,7 +69,8 @@ export const PetraWalletGuide: React.FC<PetraWalletGuideProps> = ({
                 </h3>
                 <p className="text-sm text-gray-600">
                   Create a new wallet or import an existing one. Make sure
-                  you're on the <strong>Testnet</strong> network.
+                  you're on <strong>Mainnet</strong> to match Orbix
+                  transactions.
                 </p>
               </div>
             </div>
@@ -84,13 +85,16 @@ export const PetraWalletGuide: React.FC<PetraWalletGuideProps> = ({
                   Scan the QR Code
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  In the Petra Wallet mobile app:
+                  Use your phone's camera app to scan the QR code:
                 </p>
                 <ul className="text-xs text-gray-600 space-y-1 ml-2">
-                  <li>• Look for a "WalletConnect" or "Scan" button</li>
-                  <li>• Tap it to open the camera</li>
-                  <li>• Point your camera at the QR code</li>
-                  <li>• Wait for the connection request</li>
+                  <li>• Open your phone's camera app (not Petra app)</li>
+                  <li>• Point camera at the QR code on your computer screen</li>
+                  <li>• Tap the notification that appears</li>
+                  <li>• It should open Petra Wallet automatically</li>
+                  <li>
+                    • If it opens another wallet, see troubleshooting below
+                  </li>
                 </ul>
               </div>
             </div>
@@ -116,15 +120,35 @@ export const PetraWalletGuide: React.FC<PetraWalletGuideProps> = ({
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-yellow-800 mb-1">
-                    Troubleshooting
+                  <h4 className="font-semibold text-yellow-800 mb-2">
+                    QR Code Troubleshooting
                   </h4>
-                  <ul className="text-sm text-yellow-700 space-y-1">
-                    <li>• Make sure you're on the same network (Testnet)</li>
-                    <li>• Try refreshing the QR code if it doesn't work</li>
-                    <li>• Check your internet connection</li>
-                    <li>• Make sure Petra Wallet is up to date</li>
-                  </ul>
+                  <div className="space-y-2 text-sm text-yellow-700">
+                    <div>
+                      <strong>If QR opens Lobstr instead of Petra:</strong>
+                      <ul className="list-disc list-inside mt-1 ml-2">
+                        <li>Temporarily uninstall other wallet apps</li>
+                        <li>
+                          Clear default app associations in phone settings
+                        </li>
+                        <li>
+                          Try using Petra's in-app QR scanner if available
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <strong>Other issues:</strong>
+                      <ul className="list-disc list-inside mt-1 ml-2">
+                        <li>
+                          Make sure you're on Mainnet in both Orbix and Petra
+                        </li>
+                        <li>Try refreshing the QR code if it doesn't work</li>
+                        <li>Check your internet connection</li>
+                        <li>Make sure Petra Wallet is up to date</li>
+                        <li>Test the "Open Link Directly" button first</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -14,14 +14,18 @@ export default defineConfig({
     exclude: ["lucide-react"],
     include: [
       "@aptos-labs/wallet-adapter-react",
-      "@aptos-labs/wallet-adapter-core",
+      "@aptos-labs/wallet-adapter-core", 
       "@aptos-labs/ts-sdk",
-      "petra-plugin-wallet-adapter",
+      "petra-plugin-wallet-adapter"
     ],
     esbuildOptions: {
       // Use a more compatible target for dependencies
       target: "es2020",
-    },
+      // Keep names to prevent initialization issues
+      keepNames: true,
+      // Avoid problematic transformations
+      minifyIdentifiers: false,
+    }
   },
   define: {
     global: "window",
@@ -43,10 +47,6 @@ export default defineConfig({
           }
           if (id.includes("@aptos-labs/ts-sdk")) {
             return "aptos-ts-sdk";
-          }
-          // Handle any mizu wallet related modules
-          if (id.includes("mizuwallet") || id.includes("mizu-wallet")) {
-            return "mizu-wallet-adapter";
           }
           // Separate React and React DOM
           if (id.includes("react") && !id.includes("react-dom")) {
@@ -80,25 +80,20 @@ export default defineConfig({
       external: [],
       // Preserve entry signatures to avoid symbol collisions
       preserveEntrySignatures: "strict",
-      // Add plugin to handle namespace conflicts
-      plugins: [],
     },
     // Enhanced build options
     chunkSizeWarningLimit: 2000,
     target: "es2020",
-    minify: "terser", // Switch to terser which handles symbol conflicts better
+    minify: "esbuild",
     sourcemap: false,
-    // Add terser options to handle symbol conflicts
-    terserOptions: {
-      mangle: {
-        // Preserve specific symbols to avoid conflicts
-        reserved: ["qe", "Ge", "mizuwallet"],
-      },
-      compress: {
-        // More conservative compression to avoid symbol conflicts
-        keep_fnames: true,
-        keep_classnames: true,
-      },
+    // Add esbuild options to handle initialization issues
+    esbuildOptions: {
+      // Keep function names to prevent initialization errors
+      keepNames: true,
+      // Use more conservative target to avoid compatibility issues
+      target: "es2020",
+      // Avoid mangling that might cause initialization issues
+      minifyIdentifiers: false,
     },
   },
 });

@@ -2,16 +2,24 @@ import {
   Aptos,
   AptosConfig,
   Network,
-  Account,
-  Ed25519PrivateKey,
 } from "@aptos-labs/ts-sdk";
 
-// Initialize Aptos client
-const config = new AptosConfig({ network: Network.TESTNET });
-const aptos = new Aptos(config);
+// Initialize Aptos client with error handling
+let aptos: Aptos;
+let config: AptosConfig;
+
+try {
+  config = new AptosConfig({ network: Network.TESTNET });
+  aptos = new Aptos(config);
+} catch (error) {
+  console.warn("Failed to initialize Aptos client:", error);
+  // Fallback initialization - will be retried later
+  config = new AptosConfig({ network: Network.TESTNET });
+  aptos = new Aptos(config);
+}
 
 // Contract addresses - Update these after deployment
-const VAT_REFUND_ADDRESS = "0x1"; // Replace with actual deployed address
+const VAT_REFUND_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000001"; // Replace with actual deployed address
 
 // State management for wallet connection
 let connectedAccount: string | null = null;
@@ -49,15 +57,27 @@ export const isValidAptosAddress = (address: string): boolean => {
 
     const trimmedAddress = address.trim();
 
-    // Aptos addresses start with 0x and are 66 characters long (including 0x)
-    if (!trimmedAddress.startsWith("0x") || trimmedAddress.length !== 66) {
+    // Aptos addresses start with 0x
+    if (!trimmedAddress.startsWith("0x")) {
+      return false;
+    }
+
+    // Aptos addresses can be variable length but typically 66 characters (including 0x)
+    // Accept lengths from 3 to 66 characters to handle short form addresses
+    if (trimmedAddress.length < 3 || trimmedAddress.length > 66) {
       return false;
     }
 
     // Check if the rest are valid hex characters
     const hex = trimmedAddress.slice(2);
-    return /^[0-9a-fA-F]+$/.test(hex);
+    if (hex.length === 0) {
+      return false;
+    }
+    
+    // More robust hex validation
+    return /^[0-9a-fA-F]+$/.test(hex) && hex.length % 2 === 0;
   } catch (error) {
+    console.warn("Address validation error:", error);
     return false;
   }
 };

@@ -14,9 +14,9 @@ export default defineConfig({
     exclude: ["lucide-react"],
     include: [
       "@aptos-labs/wallet-adapter-react",
-      "@aptos-labs/wallet-adapter-core", 
+      "@aptos-labs/wallet-adapter-core",
       "@aptos-labs/ts-sdk",
-      "petra-plugin-wallet-adapter"
+      "petra-plugin-wallet-adapter",
     ],
     esbuildOptions: {
       // Use a more compatible target for dependencies
@@ -25,7 +25,7 @@ export default defineConfig({
       keepNames: true,
       // Avoid problematic transformations
       minifyIdentifiers: false,
-    }
+    },
   },
   define: {
     global: "window",

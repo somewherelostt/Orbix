@@ -1,8 +1,4 @@
-import {
-  Aptos,
-  AptosConfig,
-  Network,
-} from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
 // Initialize Aptos client with error handling
 let aptos: Aptos;
@@ -19,7 +15,8 @@ try {
 }
 
 // Contract addresses - Update these after deployment
-const VAT_REFUND_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000001"; // Replace with actual deployed address
+const VAT_REFUND_ADDRESS =
+  "0x0000000000000000000000000000000000000000000000000000000000000001"; // Replace with actual deployed address
 
 // State management for wallet connection
 let connectedAccount: string | null = null;
@@ -73,7 +70,7 @@ export const isValidAptosAddress = (address: string): boolean => {
     if (hex.length === 0) {
       return false;
     }
-    
+
     // More robust hex validation
     return /^[0-9a-fA-F]+$/.test(hex) && hex.length % 2 === 0;
   } catch (error) {

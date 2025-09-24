@@ -84,7 +84,7 @@ export const VATRefundOverview: React.FC<VATRefundOverviewProps> = ({ setActiveT
             date: payment.created_at,
             amount: payment.amount,
             status: payment.status,
-            token: payment.token || 'ALGO',
+            token: payment.token || 'APT',
             transaction_hash: payment.transaction_hash
           }));
         

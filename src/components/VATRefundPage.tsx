@@ -12,12 +12,7 @@ import {
   FormInput,
   ExternalLink,
 } from "lucide-react";
-import {
-  sendBulkPayment,
-  getConnectedAccount,
-  connectWallet,
-  sendPayment,
-} from "../utils/aptos";
+import { getConnectedAccount, connectWallet } from "../utils/aptos";
 import { usePayments } from "../hooks/usePayments";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
@@ -237,11 +232,23 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
 
       setStep("sign");
 
-      // Send transaction using Aptos
+      // Import the sendPayment function dynamically
+      const { sendPayment } = await import("../utils/aptos");
+
+      // Access the wallet's signAndSubmitTransaction function
+      const walletAdapter = (window as any).aptos;
+      if (!walletAdapter || !walletAdapter.signAndSubmitTransaction) {
+        throw new Error(
+          "Petra wallet is not properly connected or installed. Please make sure Petra wallet is installed and connected."
+        );
+      }
+
+      // Send transaction using Aptos with real wallet integration
       const result = await sendPayment(
         recipientAddress,
         parseFloat(amount),
-        "APT"
+        "APT",
+        walletAdapter.signAndSubmitTransaction.bind(walletAdapter)
       );
 
       if (!result.success) {
@@ -301,13 +308,9 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
 
     setIsLoading(true);
     try {
-      // Connect wallet if not connected
-      if (!getConnectedAccount()) {
-        try {
-          await connectWallet();
-        } catch (error) {
-          throw new Error("Failed to connect wallet. Please try again.");
-        }
+      // Check if wallet is connected
+      if (!account?.address) {
+        throw new Error("Wallet not connected. Please connect your wallet.");
       }
 
       // Prepare recipient data for the payment
@@ -318,6 +321,17 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         throw new Error("Recipient wallet address is required");
       }
 
+      // Import the sendBulkPayment function dynamically
+      const { sendBulkPayment } = await import("../utils/aptos");
+
+      // Access the wallet's signAndSubmitTransaction function
+      const walletAdapter = (window as any).aptos;
+      if (!walletAdapter || !walletAdapter.signAndSubmitTransaction) {
+        throw new Error(
+          "Petra wallet is not properly connected or installed. Please make sure Petra wallet is installed and connected."
+        );
+      }
+
       // Prepare payment data
       const recipientsData = [
         {
@@ -326,8 +340,12 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         },
       ];
 
-      // Process the payment using sendBulkPayment
-      const result = await sendBulkPayment(recipientsData, selectedToken);
+      // Process the payment using sendBulkPayment with real wallet integration
+      const result = await sendBulkPayment(
+        recipientsData,
+        selectedToken,
+        walletAdapter.signAndSubmitTransaction.bind(walletAdapter)
+      );
 
       if (result.success && result.txHash) {
         setTransactionHash(result.txHash);
@@ -362,15 +380,14 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
       let errorMessage = "An unexpected error occurred";
 
       if (error instanceof Error) {
-        if (
-          error.message.includes("asset") &&
-          error.message.includes("missing from")
-        ) {
-          errorMessage =
-            "Recipient has not opted-in to receive the selected token. They must opt-in first.";
+        if (error.message.includes("insufficient funds")) {
+          errorMessage = "Insufficient funds in wallet.";
         } else if (error.message.includes("Wallet not connected")) {
           errorMessage =
             "Wallet is not connected. Please connect your wallet and try again.";
+        } else if (error.message.includes("Petra wallet")) {
+          errorMessage =
+            "Please make sure Petra wallet is installed and connected.";
         } else {
           errorMessage = error.message;
         }
@@ -1120,7 +1137,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
         return (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Sign with EVM Wallet
+              Sign with Petra Wallet
             </h2>
 
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center mb-6">
@@ -1128,15 +1145,14 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                 <>
                   <QrCode className="w-16 h-16 text-blue-500 mb-4" />
                   <h3 className="font-semibold text-gray-900 mb-2">
-                    Check Your EVM Mobile Wallet
+                    Check Your Petra Wallet
                   </h3>
                   <p className="text-gray-600 text-center mb-2">
-                    A transaction popup should appear in your EVM mobile wallet
-                    app
+                    A transaction popup should appear in your Petra wallet
                   </p>
                   <p className="text-gray-500 text-center text-sm mb-6">
-                    If you don't see it, scan this QR code with your EVM Wallet
-                    app
+                    Please approve the transaction in your Petra wallet to
+                    complete the VAT refund
                   </p>
 
                   <div className="bg-white border-2 border-gray-300 rounded-lg p-6 w-[200px] h-[200px] flex items-center justify-center mb-4">
@@ -1201,7 +1217,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                           <a
                             href={`https://explorer.aptoslabs.com/txn/${
                               transactionHash || qrValue.slice(-16)
-                            }`}
+                            }?network=testnet`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-green-900 font-mono flex items-center hover:text-blue-600 hover:underline"
@@ -1358,7 +1374,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                   <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                     <span className="text-gray-600">Transaction Hash:</span>
                     <a
-                      href={`https://testnet.explorer.perawallet.app/tx/${transactionHash}`}
+                      href={`https://explorer.aptoslabs.com/txn/${transactionHash}?network=testnet`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-gray-900 font-mono text-xs flex items-center hover:text-blue-600 hover:underline"
@@ -1507,7 +1523,7 @@ export const VATRefundPage: React.FC<VATRefundPageProps> = () => {
                     <td className="py-3 px-4 text-center">
                       {refund.transaction_hash ? (
                         <a
-                          href={`https://testnet.explorer.perawallet.app/tx/${refund.transaction_hash}`}
+                          href={`https://explorer.aptoslabs.com/txn/${refund.transaction_hash}?network=testnet`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 font-mono flex items-center justify-center space-x-1 hover:underline"

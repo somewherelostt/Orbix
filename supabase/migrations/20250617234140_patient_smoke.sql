@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS payments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   employee_id uuid REFERENCES employees(id) ON DELETE CASCADE NOT NULL,
   amount decimal(10,2) NOT NULL CHECK (amount > 0),
-  token text NOT NULL DEFAULT 'ALGO',
+  token text NOT NULL DEFAULT 'APT',
   transaction_hash text,
   status text DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed')),
   payment_date timestamptz DEFAULT now(),

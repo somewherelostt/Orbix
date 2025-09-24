@@ -1,18 +1,57 @@
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-// Initialize Aptos client with error handling
-let aptos: Aptos;
-let config: AptosConfig;
+// Lazy initialization to prevent initialization order issues
+let aptos: Aptos | null = null;
+let config: AptosConfig | null = null;
+let initializationPromise: Promise<Aptos> | null = null;
 
-try {
-  config = new AptosConfig({ network: Network.TESTNET });
-  aptos = new Aptos(config);
-} catch (error) {
-  console.warn("Failed to initialize Aptos client:", error);
-  // Fallback initialization - will be retried later
-  config = new AptosConfig({ network: Network.TESTNET });
-  aptos = new Aptos(config);
-}
+// Function to safely initialize Aptos SDK
+const getAptosClient = async (): Promise<Aptos> => {
+  if (aptos) {
+    return aptos;
+  }
+
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+
+  initializationPromise = new Promise<Aptos>((resolve, reject) => {
+    try {
+      // Add a small delay to ensure all dependencies are loaded
+      setTimeout(() => {
+        try {
+          config = new AptosConfig({ network: Network.TESTNET });
+          aptos = new Aptos(config);
+          resolve(aptos);
+        } catch (error) {
+          console.error("Failed to initialize Aptos client:", error);
+          // Try with a more basic configuration
+          try {
+            config = new AptosConfig({
+              network: Network.TESTNET,
+              // Add more conservative options
+              clientConfig: {
+                HEADERS: {},
+              },
+            });
+            aptos = new Aptos(config);
+            resolve(aptos);
+          } catch (fallbackError) {
+            console.error(
+              "Fallback Aptos initialization also failed:",
+              fallbackError
+            );
+            reject(fallbackError);
+          }
+        }
+      }, 100);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+  return initializationPromise;
+};
 
 // Contract addresses - Update these after deployment
 const VAT_REFUND_ADDRESS =
@@ -232,7 +271,8 @@ export const sendPayment = async (
 
     // Wait for transaction confirmation
     if (response.hash) {
-      const txnDetails = await aptos.waitForTransaction({
+      const aptosClient = await getAptosClient();
+      const txnDetails = await aptosClient.waitForTransaction({
         transactionHash: response.hash,
       });
 
@@ -306,7 +346,8 @@ export const sendBulkPayment = async (
       const response = await walletSignAndSubmitTransaction(payload);
 
       if (response.hash) {
-        await aptos.waitForTransaction({
+        const aptosClient = await getAptosClient();
+        await aptosClient.waitForTransaction({
           transactionHash: response.hash,
         });
         lastTxHash = response.hash;
@@ -380,7 +421,8 @@ export const getTransactionDetails = async (txHash: string): Promise<any> => {
   try {
     // Try to get actual transaction from Aptos
     try {
-      const txnDetails = await aptos.getTransactionByHash({
+      const aptosClient = await getAptosClient();
+      const txnDetails = await aptosClient.getTransactionByHash({
         transactionHash: txHash,
       });
 
@@ -472,7 +514,8 @@ export const submitVATRefund = async (
       console.log("VAT refund transaction submitted:", response);
 
       if (response.hash) {
-        const txnDetails = await aptos.waitForTransaction({
+        const aptosClient = await getAptosClient();
+        const txnDetails = await aptosClient.waitForTransaction({
           transactionHash: response.hash,
         });
 
@@ -526,7 +569,8 @@ export const getVATRefundHistory = async (): Promise<
 
     try {
       // Use smart contract view function to get refund history
-      const refunds = await aptos.view({
+      const aptosClient = await getAptosClient();
+      const refunds = await aptosClient.view({
         payload: {
           function: `${VAT_REFUND_ADDRESS}::vat_refund::view_refund_history`,
           typeArguments: [],
@@ -592,4 +636,5 @@ export const calculateVATAmount = (
   return (billAmount * vatRate) / (100 + vatRate);
 };
 
-export default aptos;
+// Export the lazy client getter instead of the potentially null aptos instance
+export default getAptosClient;

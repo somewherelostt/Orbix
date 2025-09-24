@@ -29,6 +29,8 @@ export default defineConfig({
   },
   define: {
     global: "window",
+    // Add process polyfill for better compatibility
+    "process.env": {},
   },
   build: {
     rollupOptions: {
@@ -94,6 +96,8 @@ export default defineConfig({
       target: "es2020",
       // Avoid mangling that might cause initialization issues
       minifyIdentifiers: false,
+      // Don't mangle specific problematic patterns
+      reserveProps: /^(Gh|Qc|qe|Ge)$/,
     },
   },
 });

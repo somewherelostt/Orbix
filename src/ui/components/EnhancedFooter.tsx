@@ -11,7 +11,6 @@ import {
   Wallet,
   Mail,
   Globe,
-  ArrowRight,
   Shield,
   Clock,
   DollarSign,
@@ -210,9 +209,9 @@ const EnhancedFooter = React.forwardRef<HTMLElement, EnhancedFooterProps>(
             <div className="flex items-center gap-2">
               <span className="text-white/60 text-sm">Powered by</span>
               <img
-                src="https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/web-wallet/public/aptos-logo.svg"
+                src="/Aptos_mark_WHT.svg"
                 alt="Aptos logo"
-                className="h-5"
+                className="h-5 object-contain"
               />
             </div>
           </div>

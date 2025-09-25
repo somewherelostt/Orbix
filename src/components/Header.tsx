@@ -7,6 +7,7 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "../ui/components/Button";
 import ConnectButton from "../utils/connect-wallet";
+import OrbixLogo from "./OrbixLogo";
 
 interface HeaderProps {
   activeTab: string;
@@ -106,6 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab("landing")}
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
           >
+            <OrbixLogo />
             <div>
               <h1 className="text-xl font-bold text-gray-900">Orbix</h1>
             </div>
@@ -148,19 +150,9 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
-            {/* Bolt Logo */}
-            <div className="relative">
-              <a
-                href="https://bolt.new"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  className="w-14 h-14 object-cover"
-                  src="https://i.ibb.co/4gNWmf3Z/boltlogo.png"
-                  alt="Bolt"
-                />
-              </a>
+            {/* Brand Mark (Orbix) */}
+            <div className="hidden sm:block">
+              <img src="/logo.png" alt="Orbix" className="w-10 h-10 object-contain" />
             </div>
 
             {isLandingPage ? (

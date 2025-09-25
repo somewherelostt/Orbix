@@ -129,8 +129,8 @@ function AptosLandingPage() {
             <div className="flex items-center gap-4 mb-2">
               <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center">
                 <img
-                  className="h-8 object-cover"
-                  src="https://cdn.worldvectorlogo.com/logos/aptos-1.svg"
+                  className="h-8 object-contain"
+                  src="/Aptos_mark_WHT.svg"
                   alt="Aptos logo"
                 />
               </div>
@@ -156,8 +156,8 @@ function AptosLandingPage() {
             </div>
             <div className="flex items-center gap-4 mt-4">
               <img
-                className="h-8 object-cover"
-                src="https://cdn.worldvectorlogo.com/logos/aptos-1.svg"
+                className="h-8 object-contain"
+                src="/Aptos_mark_WHT.svg"
                 alt="Aptos logo"
               />
               <img

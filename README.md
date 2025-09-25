@@ -6,7 +6,7 @@
 
 • Landing page
   
-   ![Landing page](<1 landing-page.png>)
+   ![Landing Page](<1 landing-page.png>)
 
 • Landing page explaining features
   
@@ -59,28 +59,6 @@
 • AI assistant
   
    ![AI assistant](12ai.png)
-
-## Public assets (from /public)
-
-The following assets are included in the repository's `public/` folder and are shown here for quick reference:
-
-- Aptos mark (white):
-
-   ![Aptos mark white](public/Aptos_mark_WHT.svg)
-
-- Favicon:
-
-   ![Favicon](public/favicon.ico)
-
-- Lightning icon:
-
-   ![Lightning](public/lightning.svg)
-
-- Vercel logo:
-
-   ![Vercel](public/vercel.svg)
-
-
 
 
 **On-chain VAT Refund Payment Protocol Infrastructure** protecting users against time loss, missed claims in fear of missing flights, and payment failures, powered by Aptos.

@@ -414,7 +414,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **GitHub**: [somewherelostt](https://github.com/somewherelostt)
+- **GitHub**: [Maaz](https://github.com/somewherelostt), [Swyam](https://github.com/areycruzer),[Pulkit](https://github.com/pulkit7070)
 - **Repository**: [Orbix](https://github.com/somewherelostt/Orbix)
 
 ---

@@ -5,6 +5,7 @@ import * as SubframeUtils from "../utils";
 import { Button } from "./Button";
 import { Menu, X, ChevronDown, Wallet } from "lucide-react";
 import ConnectButton from "../../utils/connect-wallet";
+import OrbixLogo from "../../components/OrbixLogo";
 
 interface NavItemProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -123,9 +124,7 @@ const EnhancedNavbar = React.forwardRef<HTMLElement, EnhancedNavbarProps>(
         <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-brand-900 flex items-center justify-center">
-              <Wallet size={16} className="text-white" />
-            </div>
+            <OrbixLogo />
             <span className="font-['Montserrat'] text-[20px] font-[800] text-brand-900">
               Orbix
             </span>
@@ -224,9 +223,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({
           <div className="flex flex-col items-center gap-6 p-6">
             {/* Logo */}
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 rounded-full bg-brand-900 flex items-center justify-center">
-                <Wallet size={20} className="text-white" />
-              </div>
+              <OrbixLogo className="w-10 h-10" />
               <span className="font-['Montserrat'] text-[24px] font-[800] text-brand-900">
                 Orbix
               </span>

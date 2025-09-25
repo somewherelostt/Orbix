@@ -152,7 +152,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-4">
             {/* Brand Mark (Orbix) */}
             <div className="hidden sm:block">
-              <img src="/logo.png" alt="Orbix" className="w-10 h-10 object-contain" />
+              <img
+                src="/logo.png"
+                alt="Orbix"
+                className="w-10 h-10 object-contain"
+              />
             </div>
 
             {isLandingPage ? (

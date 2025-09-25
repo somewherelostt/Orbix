@@ -1,6 +1,6 @@
 # Orbix
 
-![Orbix Logo](public/logo.png)
+<img src="public/logo.png" alt="Orbix Logo" width="160" />
 
 ## Prototype
 

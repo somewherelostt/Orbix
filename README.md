@@ -48,9 +48,6 @@
   
    ![Add employee](11.png)
 
-• Bulk payroll payment
-  
-   ![Bulk payroll](12bulk.png)
 
 • Bulk transfer
   

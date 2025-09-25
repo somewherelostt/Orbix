@@ -1,21 +1,46 @@
-# 🌍 Orbix-Aptos
+# ⚡ Orbix
 
-**Global Remittance Infrastructure for VAT Refunds & Payroll**  
-Wallet-native. AI-powered. Borderless. Built on APTOS.
+**On-chain VAT Refund Payment Protocol Infrastructure** protecting users against time loss, missed claims in fear of missing flights, and payment failures, powered by Aptos.
+
+**Simply means "Helping users to claim VAT Refund Anytime Anywhere without hassling"**
 
 ---
 
-## 🚀 Overview
+## 💡 Story / Inspiration
 
-**Orbix-Aptos** is the **first on-chain VAT Refund & Payroll Payment Infrastructure** that operates without heavy smart contracts.  
-Instead, it leverages:
-- **Aptos blockchain's native transactions**
-- **AI orchestration** for payroll computation and VAT eligibility
-- **Supabase** for persistence, audit trails, and compliance exports
+**The Problem That Started It All:**
+- Travelled to Dubai, bought MAC and BALMAIN clothes worth 1000 AED VAT claim
+- Reached DXB airport cutting it close due to Dubai Burj Khalifa traffic  
+- Saw a long queue at VAT refund counter, decided to wait - line wasn't moving
+- **Result: Missed flight, lost 5000 AED flight ticket = Net Loss 6000 Dirhams**
 
-Two killer use cases, unified under one infrastructure:
-1. **VAT Refunds** – Tourists scan QR at departure → confirm in Petra Wallet → refund instantly in APT.
-2. **Payroll Automation** – Employers upload CSV → AI computes net salaries + FX → HR scans one QR → employees are paid in seconds.
+This isn't just my problem - **it's a global crisis.**
+
+### 📊 The Global Problem
+**$200 Billion in VAT Goes Unclaimed Annually** due to:
+- Long queues at VAT refund counters (Dubai, Planet, etc.)
+- Fear of missing flights
+- Forgotten claims or lost receipts  
+- Average refund processing time: **10+ days**
+- Complex paperwork and bureaucratic delays
+
+These delays cause inconvenience, financial losses, and system failures worldwide.
+
+---
+
+## 🚀 The Solution: ⚡ Orbix
+
+**Helping Masses to:**
+- ✅ Claim VAT Refund fully on-chain **anytime, anywhere**
+- ✅ **Super Simple, Super Efficient, Super Easy** process
+- ✅ **Non-Intrusive**: No additional parameters, code, or complex application processes
+- ✅ **Simple Configuration** with maximum impact
+
+**Orbix** is a comprehensive **VAT Refund & Payroll Payment Infrastructure** built on the Aptos blockchain that eliminates traditional pain points through:
+- **Aptos blockchain** with Move smart contracts for secure, instant transactions
+- **Petra Wallet integration** for seamless user experience  
+- **AI orchestration** (Google Gemini) for automated processing and validation
+- **Supabase** for robust backend services and audit trails
 
 ---
 
@@ -29,285 +54,369 @@ Two killer use cases, unified under one infrastructure:
 
 ## ✅ Solution
 
-**Orbix-Aptos** provides a **wallet-native remittance infrastructure** where:
-- Tourists **receive VAT refunds** instantly in stablecoins on Aptos.
-- Employers **disburse payroll globally** with a single scan.
-- Aptos blockchain ensures **finality in ~3s** and **ultra-low fees**.
+**Orbix** provides a **wallet-native payment infrastructure** where:
+- Tourists **receive VAT refunds** instantly through Petra Wallet integration.
+- Employers **manage payroll globally** with AI-assisted calculations and bulk transfers.
+- Aptos blockchain ensures **fast finality (~3s)** and **low transaction costs**.
+- Smart contracts handle payment processing and audit trails automatically.
 
 ---
 
-## ⚙️ How It Works
+## ⚡ How It Works?
 
-### VAT Refund Flow
-1. Retailer issues invoice + VAT claim tag.
-2. Tourist opens Orbix-Aptos, uploads the invoice, flight ticket and VAT claim tag QR at any time, anywhere within 90 days.
-3. AI validates eligibility with the Operator system.
-4. Tourist confirms transfer in **Petra Wallet**.
-5. Refund delivered instantly in **APT**.
+### 1. **Tourist VAT Refund Flow:**
+- Retailer issues digital invoice + tax-free tag → Orbix locks a claim box on Aptos
+- Tourist departs → claim status flips to **VALIDATED**
+- Protocol computes: `refund = VAT × rate – fee` (configurable: 85–87%)
+- Executes instant payout in **APT** through Petra Wallet
 
-### Payroll Flow
-1. Employer uploads payroll CSV.
-2. AI parses salaries, taxes, FX → generates `TxPlan[]`.
-3. Dashboard displays preview → CFO/HR scans one QR.
-4. Treasury wallet signs and sends **chunked atomic groups** (≤16 tx each).
-5. Employees receive stablecoin salaries instantly on Aptos.
+### 2. **Payroll Flow:**  
+- HR uploads payroll CSV → AI parses and applies jurisdiction-specific tax rules
+- System snapshots FX rates and creates pay run ID anchored on-chain
+- Funds disbursed through **chunked atomic transfers** (≤16 tx/group)
+- Employees receive payments **instantly** with immutable audit trails
 
----
-
-## 🔮 Features
-
-- **Wallet-Native UX**: No contracts, no clunky DApps → just Petra Wallet scan + confirm.
-- **Tourism-Grade Simplicity**: Refunds in 2 steps → Scan QR → Confirm transfer.
-- **Enterprise Payroll**: AI-driven salary parsing, FX conversion, and bulk payouts.
-- **Transparency**: Tx notes embed `claim_id` and `payrun_id` for deterministic audits.
-- **Compliance Ready**: Supabase logs + JSON/CSV exports for regulators and finance teams.
-- **Scalability**: Chunked atomic transfers for thousands of recipients.
+**Both modules share unified protocol treasury and compliance guardrails.**
 
 ---
 
-## ⚡High-Level System Architecture
+## ⚡ Features
+
+### **For Tourists (VAT Refunds)**
+- 🚀 **Instant Refunds**: Add info → Scan QR → Confirm in Petra Wallet → Receive APT instantly
+- ✈️ **No Missed Claims**: Avoid kiosk queues and paperwork bottlenecks entirely
+- 💎 **Transparent Deductions**: Refund percentage and fees displayed in-wallet before confirmation  
+- 🌍 **Cross-Border Utility**: Funds usable worldwide, not tied to local banking rails
+
+### **For Employers (Payroll)**
+- ⚡ **Bulk Payroll in Seconds**: Upload CSV → AI computes → One QR scan → Multiple employees paid
+- 💰 **Low Fees, Instant Finality**: Aptos transfers confirm in ~4s with negligible costs
+- 🤖 **AI Compliance Layer**: Jurisdiction-aware salary parsing, deductions, and FX conversions
+
+### **Unified Benefits**
+- 📱 **Wallet-Native UX**: All approvals via Petra Wallet (scan + confirm)
+- 📋 **Auditability**: Each refund/payrun anchored with metadata (`claim_id`, `payrun_id`)
+- 🌐 **Global Reach**: Single infrastructure serving both tourists and enterprises
+
+---
+
+## ⚡System Architecture
 
 ```mermaid
 flowchart LR
   subgraph Client
-    T["Tourist App<br/>Web/Mobile"]
-    E["Employer Dashboard<br/>HR/Finance"]
-    S["Metamask Wallet<br/>Mobile"]
+    W["Web Interface<br/>(React/TypeScript)"]
+    P["Petra Wallet<br/>(Aptos Integration)"]
   end
 
-  subgraph Orbix Backend
-    API["Orbix API<br/>(REST/GraphQL)"]
-    AI["AI Orchestrator<br/>Bolt + Gemini"]
-    ORA["Oracles<br/>VAT Operator & FX"]
-    SB["Supabase<br/>DB + Storage"]
-    AUD["Audit & Export Service"]
+  subgraph Backend
+    API["Supabase<br/>(API/Auth/DB)"]
+    AI["Google Gemini<br/>(AI Processing)"]
   end
 
-  subgraph Aptos
-    APTOS["Aptos Network<br/>(APT transfers)"]
-    IDX["Aptos Indexer<br/>Tx lookups"]
+  subgraph Blockchain
+    APTOS["Aptos Network<br/>(Move Contracts)"]
+    SC["Smart Contracts<br/>(VAT + Payment)"]
   end
 
-  subgraph External
-    OP["VAT Operator API<br/>(Validation)"]
-    FX["FX Rate Feed"]
-  end
-
-  T -- "QR / Deep Link" --> S
-  E -- "QR / Deep Link" --> S
-  T -- "Refund Request" --> API
-  E -- "CSV Upload / Payrun Setup" --> API
-
-  API --> AI
-  AI --> ORA
-  ORA -- "Validate / Rates" --> OP
-  ORA -- "Live FX" --> FX
-  API --> SB
-  API -- "Create Transfer Sets" --> S
-  S -- "Signed Transfers" --> APTOS
-  APTOS -- "Tx Hashes" --> IDX
-  API -- "Pull Confirmations" --> IDX
-  API -- "Reports / Exports" --> AUD
-
+  W <--> API
+  W <--> P
+  API <--> AI
+  P <--> APTOS
+  APTOS <--> SC
+  API <--> APTOS
 ```
 
-## ✅ VAT Refund – Airport Flow
+## ✅ VAT Refund Flow
 
 ```mermaid
 sequenceDiagram
-  participant Tourist
-  participant TouristApp as Tourist App
-  participant Petra as Petra Wallet (Mobile)
-  participant API as Orbix API
-  participant Oracle as VAT Operator Oracle
-  participant Supa as Supabase
-  participant AptosNet as Aptos Network
-  participant Indexer as Aptos Indexer
-  participant Operator as VAT Operator API
-
-  Tourist->>TouristApp: Open refund link / QR
-  TouristApp->>API: Start refund (flow_id, invoice_hash)
-  API->>Supa: Store claim draft (tourist, invoice_hash)
-  API->>Oracle: Request validation (invoice_hash, passport_meta)
-  Oracle->>Operator: Validate eligibility (export, window, scheme)
-  Operator-->>Oracle: Validation OK + refundable VAT
-  Oracle-->>API: Signed validation result (amount, fee, fx)
-  API->>TouristApp: Show breakdown (rate, fee, net)
-  TouristApp-->>Tourist: Prompt "Confirm in Petra Wallet"
-
-  Tourist->>Petra: Scan QR (transfer intent)
-  Petra->>AptosNet: Submit transfer (APT to tourist)
-  AptosNet-->>Petra: Tx confirmed (~seconds)
-  Petra-->>Tourist: Refund received
-
-  Petra->>API: Callback (txid, flow_id)
-  API->>Indexer: Verify confirmation (txid)
-  Indexer-->>API: Confirmed + block data
-  API->>Supa: Persist finalization (amount, txid, timestamp)
-```
-
-## ✅ Payroll – CSV to Batched Payouts
-
-```mermaid
-sequenceDiagram
-  participant HR as Employer (HR/CFO)
-  participant Dash as Employer Dashboard
-  participant API as Orbix API
-  participant AI as AI Orchestrator
-  participant FX as FX Oracle
-  participant Supa as Supabase
-  participant Petra as Petra Wallet (Treasury)
-  participant AptosNet as Aptos Network
-  participant Indexer as Aptos Indexer
-  participant Emp as Employees (Wallets)
-
-  HR->>Dash: Upload CSV / Contracts
-  Dash->>API: Create payrun (payload)
-  API->>AI: Parse salaries, taxes, net pay
-  AI->>FX: Snapshot FX (APT)
-  FX-->>AI: Rates
-  AI-->>API: TxPlan[] (chunked ≤16 per group)
-  API->>Supa: Save payrun + tx sets
-  API-->>Dash: Preview totals, fees, FX
-
-  HR->>Petra: Scan master QR (authorize)
-  loop For each chunk (≤16)
-    Petra->>AptosNet: Broadcast grouped transfers
-    AptosNet-->>Petra: Group confirmed
-    Petra->>API: Callback (group_id, txids)
-    API->>Indexer: Verify confirmations
-    Indexer-->>API: Confirmed
-    API->>Supa: Mark chunk complete
-  end
-
-  note over Emp: Employees receive APT instantly
-  API-->>Dash: Payrun completed (txids, exports)
-```
-
-## ✅ Shared Transfer Intent
-
-```mermaid
-sequenceDiagram
-  participant Frontend as Orbix Frontend (Tourist/Employer)
-  participant API as Orbix API
-  participant AI as AI Orchestrator
+  participant User as Tourist
+  participant Web as Web Interface
+  participant AI as Google Gemini
   participant Petra as Petra Wallet
-  participant AptosNet as Aptos Network
-  participant Supa as Supabase
-  participant Indexer as Aptos Indexer
+  participant Supabase as Supabase DB
+  participant Aptos as Aptos Network
+  participant Contract as VAT Contract
 
-  Frontend->>API: Request transfer set (VAT or PAYROLL)
-  API->>AI: Build intents (amount, asset, notes, groups)
-  AI-->>API: Intent[] {to, asset, amt, note, group}
-  API-->>Frontend: QR payload (URI with intents)
-  Frontend->>Petra: Show QR for scan
-  Petra->>AptosNet: Submit transfers (single/grouped)
-  AptosNet-->>Petra: Confirmation (txid/group)
-  Petra->>API: Callback (txids)
-  API->>Indexer: Verify & enrich
-  Indexer-->>API: Status OK
-  API->>Supa: Persist ledger (context_id, txids, fx, ts)
+  User->>Web: Upload documents & details
+  Web->>AI: Validate eligibility & amount
+  AI-->>Web: Validation result
+  Web->>Supabase: Store claim data
+  Web->>User: Show refund preview
+  User->>Petra: Connect wallet
+  Petra->>Contract: Submit VAT refund claim
+  Contract->>Aptos: Process transaction
+  Aptos-->>Petra: Transaction confirmed
+  Petra-->>User: Refund received
+  Contract->>Supabase: Update claim status
 ```
 
-## 🛠️ Tech Stack
+## ✅ Payroll Processing Flow
 
-- **Blockchain**: Aptos
-  – Fast finality, ultra-low fees, and stablecoin rails (APT).
+```mermaid
+sequenceDiagram
+  participant HR as HR/Employer
+  participant Dashboard as Web Dashboard
+  participant AI as Google Gemini
+  participant Supabase as Supabase DB
+  participant Petra as Petra Wallet
+  participant Aptos as Aptos Network
+  participant Contract as Payment Contract
 
-- **Wallet**: Petra Wallet
-  – Mobile-first signing with QR scan/deep link support.
+  HR->>Dashboard: Manage employees & salaries
+  Dashboard->>AI: Calculate payments & taxes
+  AI-->>Dashboard: Payment breakdown
+  Dashboard->>Supabase: Store payroll data
+  Dashboard-->>HR: Preview payments
+  HR->>Petra: Connect wallet & authorize
+  Petra->>Contract: Execute bulk payment
+  Contract->>Aptos: Process batch transactions
+  Aptos-->>Contract: Transactions confirmed
+  Contract-->>Petra: Bulk payment complete
+  Contract->>Supabase: Update payment records
+  Dashboard-->>HR: Payment confirmation
+```
 
-- **AI Layer**: [Bolt.new](https://bolt.new) + Gemini
-  – Salary parsing, jurisdictional tax/FX reasoning, transfer instruction generation.
+## 🚀 Getting Started
 
-- **Backend**: [Supabase](https://supabase.com/)
-  – Postgres DB, object storage, user audit logs, and compliance artifacts.
+### Prerequisites
+- Node.js (v18 or higher)
+- PNPM package manager
+- Petra Wallet browser extension
+- Supabase account
+- Google AI API key
 
-- **Frontend**: React + Next.js dashboards for tourists & employers.
+### Installation
 
-- **Indexing**: Aptos Indexer for transaction verification & reporting.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/somewherelostt/Orbix.git
+   cd Orbix
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_GEMINI_API_KEY=your_google_ai_api_key
+   ```
+
+4. **Start the development server**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Deploy Smart Contracts**
+   ```bash
+   cd contracts
+   aptos move compile
+   aptos move publish
+   ```
+
+### Usage
+
+1. **Connect Petra Wallet** through the web interface
+2. **For VAT Refunds**: Upload receipts and documentation
+3. **For Payroll**: Add employees and configure payments
+4. **Monitor transactions** through the dashboard
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # React components
+├── hooks/              # Custom React hooks
+├── services/           # External service integrations
+├── utils/              # Utility functions and Aptos helpers
+├── contexts/           # React context providers
+├── ui/                 # UI component library
+└── lib/                # Library configurations
+
+contracts/
+├── sources/            # Move smart contracts
+└── Move.toml          # Contract configuration
+```
+
+## ⚡ Tech Stack
+
+### 1. **Aptos Native Transfers**
+- Direct payment transactions with Move smart contracts
+- **Atomic groups** (≤16 transfers at once) for efficient batching
+- Payout notes include metadata: `claim_id` or `payrun_id` for auditability
+
+### 2. **Petra Wallet Integration**
+- Core interaction layer for tourists, employers, and employees
+- **Deep linking & QR scanning** for seamless UX
+- In-app transfer confirmation with transparent fee display
+
+### 3. **AI Layer (Google Gemini)**
+- **Payroll**: Salary parsing, FX rate lookup, OCR processing
+- **VAT**: Validation checks and eligibility verification  
+- Outputs human-readable & blockchain-ready transfer instructions
+
+### 4. **Supabase Backend**
+- Stores receipts, payruns, validation logs, and AI outputs
+- Transfer hash storage for regulatory compliance
+- Real-time database with authentication and authorization
 
 ---
 
 ## 📡 Data Flow
 
-1. **Input**
-   - VAT Refunds: Retailer receipts, passport/KYC snapshots.
-   - Payroll: Employer CSV with gross pay data.
+1. **User Input**
+   - VAT Refunds: Document uploads, receipt images, eligibility information
+   - Payroll: Employee management, salary data, payment configurations
 
-2. **Processing**
-   - AI parses salaries, deductions, taxes.
-   - AI validate VAT eligibility & fetches FX rates.
+2. **AI Processing**  
+   - Google Gemini validates documents and calculates eligible amounts
+   - Automated tax calculations and compliance checks
 
-3. **Persistence**
-   - Supabase stores invoices, payruns, logs, validation proofs.
+3. **Database Operations**
+   - Supabase stores user profiles, payment history, and transaction logs
+   - Real-time updates for dashboard synchronization
 
-4. **Execution**
-   - API encodes transfer sets → generates QR codes → Petra Wallet signs & submits.
+4. **Blockchain Execution**
+   - Petra Wallet handles user authentication and transaction signing
+   - Move smart contracts process payments and maintain audit trails
+   - Aptos network provides fast finality and low transaction costs
 
-5. **Finality**
-   - Aptos executes transfers.
-   - Indexer confirms results.
-   - Supabase logs for audit.
-
-6. **Audit**
-   - Export JSON/CSV/PDF reports for regulators & enterprise compliance.
+5. **Audit & Reporting**
+   - Transaction hashes stored for immutable proof
+   - Dashboard provides real-time payment tracking and history
 
 ---
 
 ## 🔐 Security & Compliance
 
-- **Treasury Wallet**: Multisig or HSM-protected Petra Wallet for payroll disbursements.
-- **Dual Approval**: CFO + HR authorization required for bulk payruns.
-- **Oracle Verification**: Only signed operator callbacks can validate VAT claims.
-- **KYC/AML Hooks**: Wallet screening APIs integrated during onboarding.
-- **Immutable Audit Trail**: Supabase DB + Aptos tx hashes provide verifiable record-keeping.
-- **Circuit Breakers**: Abort payruns if totals exceed configured treasury limits.
+- **Petra Wallet Integration**: Secure key management through Aptos ecosystem
+- **Smart Contract Security**: Move language provides memory safety and resource protection
+- **Supabase Auth**: Row-level security and JWT-based authentication
+- **AI Processing**: Document validation without storing sensitive personal data
+- **Audit Trail**: Immutable transaction records on Aptos blockchain
+- **Input Validation**: Comprehensive address and amount validation before processing
 
 ---
 
 ## 💰 Business Model
 
-- **Platform Fees**: 0.5% per payout (tourist refund / payroll).
-- **Enterprise SaaS**: Subscription-based dashboards & compliance exports for HR/finance teams.
-- **Partnership Revenue**: Integration fees with VAT Operators & HR SaaS providers.
-- **Future Yield**: Earn yield on idle treasury balances + capture micro-spreads on FX conversions.
+### **Transaction Fees**
+- Taking a **0.5% platform fee** on each refund/payroll payout
+
+### **Enterprise Subscriptions**  
+- Employers pay monthly SaaS fees for:
+  - Advanced payroll dashboard and analytics
+  - Compliance tools and automated reporting
+  - Audit exports and regulatory documentation
+
+### **Partnership Revenue**
+- **VAT Operator Integration**: Revenue-sharing with Dubai VAT Refund Authorities, Planet, FTA
+- **API Licensing**: Package deals for fintechs/DAOs wanting to use Orbix infrastructure
+
+### **Treasury Float & FX Spread** *(Future)*
+- Earn yield on treasury idle balances
+- Capture micro-spreads on in-app FX conversions
 
 ---
 
-## 📈 Go-To-Market (GTM)
+## ⚡ Go-To-Market Strategy
 
-- **Phase 1 – Tourism**:
-  Pilot deployment at **Dubai International Airport** with VAT operator integration.
+### **Phase 1: Tourism (Dubai)**
+- Partner with **approved VAT Operators** in UAE
+- Deploy at **Dubai International Airport** as "fast-track refunds via Petra Wallet"
+- Onboard tourists via signage, airline check-in, and in-airport promotions
+- *Why Dubai?* Comparatively easy country to start with and has existing agreements with Aptos
 
-- **Phase 2 – Payroll**:
-  Target **DAOs, Web3 startups, and SMEs** in Africa & LATAM with APT-based payroll rails on Aptos.
+### **Phase 2: Payroll (Web3 + Startups)**
+- Target **remote-first startups, DAOs, and SMEs** in India, Africa, LATAM, and Asia
+- Offer **APT payroll rails** for distributed global teams
+- Collaborate with accelerators and Web3 communities for rapid adoption
 
-- **Phase 3 – Enterprise Expansion**:
-  Partner with **multinationals** and expand VAT refunds to EU, UK, Singapore, and Saudi Arabia.
+### **Phase 3: Enterprise Expansion**
+- Partner with **multinationals** for cross-border salary disbursement
+- Offer **API + compliance dashboards** for HR SaaS integrations  
+- Add more VAT geographies: **EU, UK, Singapore, Saudi Arabia**
 
-- **Phase 4 – DAO Governance**:
-  Transition to community-driven governance of refund % rates, fee splits, and expansion markets.
+### **Phase 4: Orbix DAO & Network Effects**
+- Transition governance to a **decentralized DAO**
+- Community votes on fee splits, refund % rates, and expansion markets
+- **Tokenize access**: Loyalty incentives for employers and tourists using Orbix infrastructure
 
 ---
 
-## 🔮 Roadmap
+## ⚡ Future Vision
 
-- ✅ **MVP**: Wallet-native VAT refunds + CSV-based payroll automation.
-- 🔄 **Next**: Multi-country VAT support + AI-driven tax compliance engine.
-- 🔄 **Later**: Enterprise integrations, auto-scheduling, PDF-based compliance exports.
-- 🌐 **Future**: Orbix-Aptos DAO + full protocol governance.
+### **Multi-Country Expansion**
+- Add **EU, UK, and Asia** VAT refund partners for global coverage
+
+### **Payroll AI++**  
+- **Jurisdiction-specific payroll tax modules** → auto-deduct & calculate net pay
+- **Treasury Automation**: Auto-scheduling payroll runs based on company preferences
+
+### **Enterprise APIs**
+- Enable **fintechs, DAOs, and global SMBs** to plug Orbix rails into their HR/payments stack
+- White-label solutions for existing payment processors
+
+### **Compliance Integrations**
+- **Automated KYC hooks** and AML screening for regulatory compliance
+- **PDF audit reports** for enterprises and regulators
+- Real-time compliance monitoring and alerting
+
+### **DAO Governance** 
+- **Refund % fees, payroll fee splits, and expansion markets** managed by Orbix DAO
+- Community-driven product roadmap and feature prioritization
+
+---
+
+## 🎯 Why Orbix Will Succeed
+
+- ✅ **Real Problem**: $200B+ VAT goes unclaimed annually - massive market opportunity
+- ✅ **Proven Solution**: Started with founder's personal pain point in Dubai
+- ✅ **Strategic Location**: Dubai as launch market with Aptos partnerships  
+- ✅ **Technical Excellence**: Built on fast, low-cost Aptos infrastructure
+- ✅ **User Experience**: Wallet-native flows eliminate friction completely
+
+**⚡ Orbix will be killing it!!**
 
 ---
 
 ## 🌟 Why Aptos Blockchain?
 
-Orbix-Aptos leverages the unique advantages of the Aptos blockchain:
+Orbix leverages the unique advantages of the Aptos blockchain:
 
-- **Lightning-Fast Finality**: ~3 second transaction finality enables real-time VAT refunds and instant payroll.
-- **Minimal Transaction Fees**: Fraction-of-a-cent transaction costs make micro-refunds economically viable.
-- **Atomic Transfers**: Native support for grouped transactions enables efficient bulk payroll disbursements.
-- **Scalability**: High throughput capacity supports enterprise-grade payment volumes.
-- **Developer-Friendly**: Aptos's intuitive transaction model simplifies integration without complex smart contracts.
-- **Energy Efficiency**: Environmentally sustainable consensus mechanism aligns with corporate ESG goals.
-- **Robust Indexing**: Advanced indexing capabilities enable real-time payment tracking and compliance reporting.
+- **Lightning-Fast Finality**: ~3 second transaction finality enables real-time payments
+- **Low Transaction Costs**: Minimal fees make micro-transactions economically viable
+- **Move Smart Contracts**: Memory-safe, resource-oriented programming for secure DeFi
+- **Parallel Execution**: High throughput supports enterprise-scale payment volumes
+- **Petra Wallet Ecosystem**: Seamless integration with Aptos's premier wallet
+- **Developer Experience**: Intuitive APIs and comprehensive TypeScript SDK
+- **Sustainable Consensus**: Energy-efficient proof-of-stake mechanism
+
+## 🤝 Contributing
+
+We welcome contributions to Orbix! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Contact
+
+- **GitHub**: [somewherelostt](https://github.com/somewherelostt)
+- **Repository**: [Orbix](https://github.com/somewherelostt/Orbix)
+
+---
+
+Built with ❤️ for the future of global payments

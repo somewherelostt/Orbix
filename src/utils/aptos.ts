@@ -24,31 +24,37 @@ export const getPetraWallet = () => {
 };
 
 // Simple Aptos client for basic operations (using fetch directly)
-export const makeAptosApiCall = async (endpoint: string, method: string = 'GET', body?: any) => {
+export const makeAptosApiCall = async (
+  endpoint: string,
+  method: string = "GET",
+  body?: any
+) => {
   try {
-    const baseUrl = 'https://fullnode.testnet.aptoslabs.com/v1';
+    const baseUrl = "https://fullnode.testnet.aptoslabs.com/v1";
     const url = `${baseUrl}${endpoint}`;
-    
+
     const options: RequestInit = {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
-    
-    if (body && method !== 'GET') {
+
+    if (body && method !== "GET") {
       options.body = JSON.stringify(body);
     }
-    
+
     const response = await fetch(url, options);
-    
+
     if (!response.ok) {
-      throw new Error(`Aptos API call failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Aptos API call failed: ${response.status} ${response.statusText}`
+      );
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Aptos API call failed:', error);
+    console.error("Aptos API call failed:", error);
     throw error;
   }
 };
@@ -126,26 +132,31 @@ export const connectWallet = async (): Promise<{
   try {
     // Try to connect to actual Petra wallet first
     const petraWallet = getPetraWallet();
-    
+
     if (petraWallet) {
       try {
         // Request connection to Petra wallet
         const response = await petraWallet.connect();
-        
+
         if (response && response.address) {
           connectedAccount = response.address;
-          
+
           // Try to get actual balance
           try {
             const balance = await petraWallet.account();
-            const aptBalance = balance?.coin ? parseFloat(balance.coin) / 100000000 : 0;
-            
+            const aptBalance = balance?.coin
+              ? parseFloat(balance.coin) / 100000000
+              : 0;
+
             return {
               address: response.address,
               balance: aptBalance,
             };
           } catch (balanceError) {
-            console.warn("Failed to get balance from Petra wallet:", balanceError);
+            console.warn(
+              "Failed to get balance from Petra wallet:",
+              balanceError
+            );
             return {
               address: response.address,
               balance: 0,
@@ -156,7 +167,7 @@ export const connectWallet = async (): Promise<{
         console.warn("Petra wallet connection failed, using mock:", petraError);
       }
     }
-    
+
     // Fallback to mock implementation
     console.log("Using mock wallet connection");
     const mockAddress = generateMockAddress();
@@ -301,19 +312,22 @@ export const sendPayment = async (
     const response = await walletSignAndSubmitTransaction(payload);
     console.log("Transaction submitted:", response);
 
-        // Wait for transaction confirmation
-        if (response.hash) {
-          try {
-            // Try to confirm transaction using Aptos API
-            const txnDetails = await makeAptosApiCall(`/transactions/by_hash/${response.hash}`);
-            console.log("Transaction confirmed:", txnDetails);
-          } catch (confirmError) {
-            console.warn(
-              "Failed to confirm transaction, but hash was returned:",
-              confirmError
-            );
-            // Continue anyway since we have the hash
-          }      return {
+    // Wait for transaction confirmation
+    if (response.hash) {
+      try {
+        // Try to confirm transaction using Aptos API
+        const txnDetails = await makeAptosApiCall(
+          `/transactions/by_hash/${response.hash}`
+        );
+        console.log("Transaction confirmed:", txnDetails);
+      } catch (confirmError) {
+        console.warn(
+          "Failed to confirm transaction, but hash was returned:",
+          confirmError
+        );
+        // Continue anyway since we have the hash
+      }
+      return {
         success: true,
         txHash: response.hash,
       };
@@ -462,7 +476,9 @@ export const getTransactionDetails = async (txHash: string): Promise<any> => {
   try {
     // Try to get actual transaction from Aptos
     try {
-      const txnDetails = await makeAptosApiCall(`/transactions/by_hash/${txHash}`);
+      const txnDetails = await makeAptosApiCall(
+        `/transactions/by_hash/${txHash}`
+      );
 
       // Handle different transaction response types
       if ("success" in txnDetails) {
@@ -561,7 +577,9 @@ export const submitVATRefund = async (
       if (response.hash) {
         try {
           // Try to confirm transaction using Aptos API
-          const txnDetails = await makeAptosApiCall(`/transactions/by_hash/${response.hash}`);
+          const txnDetails = await makeAptosApiCall(
+            `/transactions/by_hash/${response.hash}`
+          );
           console.log("VAT refund transaction confirmed:", txnDetails);
         } catch (confirmError) {
           console.warn(

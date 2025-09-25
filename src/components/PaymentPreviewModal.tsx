@@ -111,7 +111,21 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
 
       console.log("Recipients data prepared:", recipientsData);
 
-      const result = await sendBulkPayment(recipientsData, selectedToken);
+      // Access Petra wallet to sign and submit the transaction
+      const walletAdapter = (window as any).aptos;
+      if (!walletAdapter || !walletAdapter.signAndSubmitTransaction) {
+        throw new Error(
+          "Petra wallet is not properly connected or installed. Please make sure Petra wallet is installed and connected."
+        );
+      }
+
+      const tokenToUse: "APT" | "USDC" = selectedToken === "USDC" ? "USDC" : "APT";
+
+      const result = await sendBulkPayment(
+        recipientsData,
+        tokenToUse,
+        walletAdapter.signAndSubmitTransaction.bind(walletAdapter)
+      );
 
       if (result.success) {
         // Record payments in Supabase
@@ -168,7 +182,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
         setPaymentResult({
           success: true,
           txHash: result.txHash,
-          processed: result.processed,
+          processed: employeesToPay.length,
           emailResults,
         });
 
@@ -180,7 +194,7 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
         setPaymentResult({
           success: false,
           error: result.error || "Payment failed",
-          processed: result.processed,
+          processed: 0,
         });
       }
     } catch (error) {

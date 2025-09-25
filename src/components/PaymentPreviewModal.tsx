@@ -119,7 +119,8 @@ export const PaymentPreviewModal: React.FC<PaymentPreviewModalProps> = ({
         );
       }
 
-      const tokenToUse: "APT" | "USDC" = selectedToken === "USDC" ? "USDC" : "APT";
+      const tokenToUse: "APT" | "USDC" =
+        selectedToken === "USDC" ? "USDC" : "APT";
 
       const result = await sendBulkPayment(
         recipientsData,

@@ -1,4 +1,87 @@
-# ⚡ Orbix
+# Orbix
+
+![Orbix Logo](public/logo.png)
+
+## Prototype
+
+• Landing page
+  
+   ![Landing page](<1 landing-page.png>)
+
+• Landing page explaining features
+  
+   ![Landing page 2](1landing-page2.png)
+
+• After clicking wallet, Petra asks for confirmation to connect
+  
+   ![Wallet connect prompt](4walletclick.png)
+
+• Dashboard
+  
+   ![Dashboard](5dashboard.png)
+
+• VAT refund
+  
+   ![VAT refund](6vatrefund.png)
+
+• VAT refund approval
+  
+   ![VAT refund approve](7vatrefund.png)
+
+• Petra asking to confirm the transaction
+  
+   ![Confirm transaction](8vatrefundaprove.png)
+
+• Transaction hash on Aptos Explorer
+  
+   ![Aptos Explorer](9aptosexplorer.png)
+
+• VAT refund history
+  
+   ![VAT refund history](10vatrefundhistory.png)
+
+• Employee management
+  
+   ![Employee management](10employee.png)
+
+• Add employee either manually or via bulk CSV
+  
+   ![Add employee](11.png)
+
+• Bulk payroll payment
+  
+   ![Bulk payroll](12bulk.png)
+
+• Bulk transfer
+  
+   ![Bulk transfer](12bulk-1.png)
+
+• AI assistant
+  
+   ![AI assistant](12ai.png)
+
+## Public assets (from /public)
+
+The following assets are included in the repository's `public/` folder and are shown here for quick reference:
+
+- Aptos mark (white):
+
+   ![Aptos mark white](public/Aptos_mark_WHT.svg)
+
+- Favicon:
+
+   ![Favicon](public/favicon.ico)
+
+- Lightning icon:
+
+   ![Lightning](public/lightning.svg)
+
+- Vercel logo:
+
+   ![Vercel](public/vercel.svg)
+
+
+
 
 **On-chain VAT Refund Payment Protocol Infrastructure** protecting users against time loss, missed claims in fear of missing flights, and payment failures, powered by Aptos.
 
